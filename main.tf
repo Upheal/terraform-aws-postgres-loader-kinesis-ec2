@@ -25,7 +25,7 @@ data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 
 locals {
-  is_aws_global = replace(data.aws_region.current.name, "cn-", "") == data.aws_region.current.name
+  is_aws_global = replace(data.aws_region.current.region, "cn-", "") == data.aws_region.current.region
   iam_partition = local.is_aws_global ? "aws" : "aws-cn"
 
   is_private_ecr_registry = var.private_ecr_registry != ""
@@ -51,7 +51,7 @@ module "telemetry" {
 
   user_provided_id = var.user_provided_id
   cloud            = "AWS"
-  region           = data.aws_region.current.name
+  region           = data.aws_region.current.region
   app_name         = local.app_name
   app_version      = local.app_version
   module_name      = local.module_name
@@ -141,7 +141,7 @@ resource "aws_iam_policy" "iam_policy" {
             "kinesis:Get*"
           ],
           Resource = [
-            "arn:${local.iam_partition}:kinesis:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:stream/${var.in_stream_name}"
+            "arn:${local.iam_partition}:kinesis:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:stream/${var.in_stream_name}"
           ]
         },
         {
@@ -167,7 +167,7 @@ resource "aws_iam_policy" "iam_policy" {
             "logs:DescribeLogStreams"
           ],
           Resource = [
-            "arn:${local.iam_partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${local.cloudwatch_log_group_name}:*"
+            "arn:${local.iam_partition}:logs:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:log-group:${local.cloudwatch_log_group_name}:*"
           ]
         }
       ]
@@ -309,7 +309,7 @@ locals {
     in_max_batch_size_checkpoint = var.in_max_batch_size_checkpoint
     in_max_batch_wait_checkpoint = var.in_max_batch_wait_checkpoint
 
-    region           = data.aws_region.current.name
+    region           = data.aws_region.current.region
     initial_position = var.initial_position
 
     db_host            = var.db_host
@@ -346,7 +346,7 @@ locals {
 
     is_private_ecr_registry = local.is_private_ecr_registry
     private_ecr_registry    = var.private_ecr_registry
-    region                  = data.aws_region.current.name
+    region                  = data.aws_region.current.region
   })
 }
 
